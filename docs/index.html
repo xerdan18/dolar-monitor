@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monitor del dólar — Argentina</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --border: rgba(11,11,11,0.10);
+    --c-oficial: #2a78d6;--c-blue: #1baf7a;--c-bolsa: #eda100;--c-tarjeta: #008300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
+      --c-oficial: #3987e5;--c-blue: #199e70;--c-bolsa: #c98500;--c-tarjeta: #008300;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--page); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding: 32px 20px; max-width: 1000px; margin: 0 auto;
+  }
+  header h1 { font-size: 1.5rem; }
+  header p { color: var(--ink-2); margin-top: 4px; }
+  .tiles {
+    display: grid; gap: 12px; margin: 24px 0;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .tile {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px;
+  }
+  .tile h3 { font-size: 0.85rem; font-weight: 600; color: var(--ink-2); }
+  .tile .value { font-size: 1.6rem; font-weight: 700; margin: 6px 0 2px; }
+  .tile .sub { font-size: 0.8rem; color: var(--muted); }
+  .tile .delta { font-size: 0.8rem; color: var(--ink-2); display: block;
+                  margin-top: 8px; }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; margin-bottom: 24px;
+    position: relative;
+  }
+  .card h2 { font-size: 1.05rem; margin-bottom: 12px; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; }
+  .chip { font-size: 0.8rem; color: var(--ink-2); display: inline-flex;
+           align-items: center; gap: 6px; }
+  .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  svg { width: 100%; height: auto; display: block; }
+  svg .grid { stroke: var(--grid); stroke-width: 1; }
+  svg .tick { fill: var(--muted); font-size: 12px;
+               font-variant-numeric: tabular-nums; }
+  svg .label { fill: var(--ink); font-size: 12px; font-weight: 600; }
+  svg .crosshair { stroke: var(--muted); stroke-dasharray: 3 3; }
+  .note { color: var(--muted); font-size: 0.8rem; margin-top: 8px; }
+  #tooltip {
+    position: absolute; pointer-events: none; visibility: hidden;
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 12px; font-size: 0.8rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10;
+  }
+  #tooltip strong { display: block; margin-bottom: 4px; }
+  #tooltip .row { display: flex; align-items: center; gap: 6px;
+                   color: var(--ink-2); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 8px 12px;
+            border-bottom: 1px solid var(--grid); }
+  td:nth-child(n+2), th:nth-child(n+2) { text-align: right;
+            font-variant-numeric: tabular-nums; }
+  th { color: var(--ink-2); font-weight: 600; font-size: 0.8rem; }
+  footer { color: var(--muted); font-size: 0.8rem; text-align: center;
+            margin-top: 8px; }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Monitor del dólar — Argentina</h1>
+  <p>Última actualización: 15/07/2026 · Se actualiza solo,
+     todos los días</p>
+</header>
+
+<section class="tiles">
+      <div class="tile">
+        <h3>Oficial</h3>
+        <p class="value">$1.495,00</p>
+        <p class="sub">Compra: $1.445,00</p>
+        <span class="delta">— sin corrida previa</span>
+      </div>
+      <div class="tile">
+        <h3>Blue</h3>
+        <p class="value">$1.530,00</p>
+        <p class="sub">Compra: $1.510,00</p>
+        <span class="delta">— sin corrida previa</span>
+      </div>
+      <div class="tile">
+        <h3>Bolsa</h3>
+        <p class="value">$1.515,70</p>
+        <p class="sub">Compra: $1.509,00</p>
+        <span class="delta">— sin corrida previa</span>
+      </div>
+      <div class="tile">
+        <h3>Contado con liquidación</h3>
+        <p class="value">$1.565,70</p>
+        <p class="sub">Compra: $1.562,20</p>
+        <span class="delta">— sin corrida previa</span>
+      </div>
+      <div class="tile">
+        <h3>Mayorista</h3>
+        <p class="value">$1.474,50</p>
+        <p class="sub">Compra: $1.465,50</p>
+        <span class="delta">— sin corrida previa</span>
+      </div>
+      <div class="tile">
+        <h3>Cripto</h3>
+        <p class="value">$1.562,61</p>
+        <p class="sub">Compra: $1.560,27</p>
+        <span class="delta">— sin corrida previa</span>
+      </div>
+      <div class="tile">
+        <h3>Tarjeta</h3>
+        <p class="value">$1.943,50</p>
+        <p class="sub">Compra: $1.878,50</p>
+        <span class="delta">— sin corrida previa</span>
+      </div>
+</section>
+
+<section class="card">
+  <h2>Evolución — precio de venta</h2>
+  <div class="legend"><span class="chip"><span class="swatch" style="background:var(--c-oficial)"></span>Oficial</span><span class="chip"><span class="swatch" style="background:var(--c-blue)"></span>Blue</span><span class="chip"><span class="swatch" style="background:var(--c-bolsa)"></span>Bolsa</span><span class="chip"><span class="swatch" style="background:var(--c-tarjeta)"></span>Tarjeta</span></div>
+  <svg viewBox="0 0 920 340" role="img" aria-label="Evolución de la cotización de venta"><line x1="64" y1="297.0" x2="800" y2="297.0" class="grid"/><text x="56" y="297.0" class="tick" text-anchor="end" dy="0.32em">$1.500</text><line x1="64" y1="240.8" x2="800" y2="240.8" class="grid"/><text x="56" y="240.8" class="tick" text-anchor="end" dy="0.32em">$1.600</text><line x1="64" y1="184.6" x2="800" y2="184.6" class="grid"/><text x="56" y="184.6" class="tick" text-anchor="end" dy="0.32em">$1.700</text><line x1="64" y1="128.4" x2="800" y2="128.4" class="grid"/><text x="56" y="128.4" class="tick" text-anchor="end" dy="0.32em">$1.800</text><line x1="64" y1="72.2" x2="800" y2="72.2" class="grid"/><text x="56" y="72.2" class="tick" text-anchor="end" dy="0.32em">$1.900</text><line x1="64" y1="16.0" x2="800" y2="16.0" class="grid"/><text x="56" y="16.0" class="tick" text-anchor="end" dy="0.32em">$2.000</text><text x="432.0" y="324" class="tick" text-anchor="middle">15/07</text><circle cx="432.0" cy="299.8" r="3.5" fill="var(--c-oficial)" stroke="var(--surface-1)" stroke-width="2"/><circle cx="432.0" cy="280.1" r="3.5" fill="var(--c-blue)" stroke="var(--surface-1)" stroke-width="2"/><circle cx="432.0" cy="288.2" r="3.5" fill="var(--c-bolsa)" stroke="var(--surface-1)" stroke-width="2"/><circle cx="432.0" cy="47.8" r="3.5" fill="var(--c-tarjeta)" stroke="var(--surface-1)" stroke-width="2"/><rect x="442.0" y="42.75179277037904" width="10" height="10" rx="2" fill="var(--c-tarjeta)"/><text x="457.0" y="47.75179277037904" class="label" dy="0.32em">Tarjeta</text><rect x="442.0" y="275.12995755890535" width="10" height="10" rx="2" fill="var(--c-blue)"/><text x="457.0" y="280.12995755890535" class="label" dy="0.32em">Blue</text><rect x="442.0" y="291.12995755890535" width="10" height="10" rx="2" fill="var(--c-bolsa)"/><text x="457.0" y="296.12995755890535" class="label" dy="0.32em">Bolsa</text><rect x="442.0" y="307.12995755890535" width="10" height="10" rx="2" fill="var(--c-oficial)"/><text x="457.0" y="312.12995755890535" class="label" dy="0.32em">Oficial</text><line id="crosshair" x1="0" y1="16" x2="0" y2="304" class="crosshair" visibility="hidden"/></svg>
+  <div id="tooltip"></div>
+  <p class='note'>El gráfico se completa automáticamente con cada corrida diaria.</p>
+</section>
+
+<section class="card">
+  <h2>Todas las cotizaciones de hoy</h2>
+  <table>
+    <thead><tr><th>Cotización</th><th>Compra</th><th>Venta</th></tr></thead>
+    <tbody><tr><td>Oficial</td><td>$1.445,00</td><td>$1.495,00</td></tr><tr><td>Blue</td><td>$1.510,00</td><td>$1.530,00</td></tr><tr><td>Bolsa</td><td>$1.509,00</td><td>$1.515,70</td></tr><tr><td>Contado con liquidación</td><td>$1.562,20</td><td>$1.565,70</td></tr><tr><td>Mayorista</td><td>$1.465,50</td><td>$1.474,50</td></tr><tr><td>Cripto</td><td>$1.560,27</td><td>$1.562,61</td></tr><tr><td>Tarjeta</td><td>$1.878,50</td><td>$1.943,50</td></tr></tbody>
+  </table>
+</section>
+
+<footer>
+  Datos: <a href="https://dolarapi.com">dolarapi.com</a> · Actualizado a diario
+  con GitHub Actions · Hecho por
+  <a href="https://github.com/xerdan18">Bruno (xerdan18)</a>
+</footer>
+
+<script>
+const DATA = {"dates": ["2026-07-15"], "geom": {"w": 920, "left": 64, "right": 120}, "series": [{"nombre": "Oficial", "casa": "oficial", "values": [1495.0]}, {"nombre": "Blue", "casa": "blue", "values": [1530.0]}, {"nombre": "Bolsa", "casa": "bolsa", "values": [1515.7]}, {"nombre": "Tarjeta", "casa": "tarjeta", "values": [1943.5]}]};
+const svg = document.querySelector("svg");
+const cross = document.getElementById("crosshair");
+const tip = document.getElementById("tooltip");
+const card = tip.parentElement;
+const fmtAr = v => "$" + v.toLocaleString("es-AR",
+  {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+svg.addEventListener("mousemove", ev => {
+  const rect = svg.getBoundingClientRect();
+  const scale = DATA.geom.w / rect.width;
+  const mx = (ev.clientX - rect.left) * scale;
+  const plotW = DATA.geom.w - DATA.geom.left - DATA.geom.right;
+  const n = DATA.dates.length;
+  const i = n === 1 ? 0 : Math.max(0, Math.min(n - 1,
+    Math.round((mx - DATA.geom.left) / plotW * (n - 1))));
+  const cx = n === 1 ? DATA.geom.left + plotW / 2
+                     : DATA.geom.left + plotW * i / (n - 1);
+  cross.setAttribute("x1", cx); cross.setAttribute("x2", cx);
+  cross.setAttribute("visibility", "visible");
+  const [y, m, d] = DATA.dates[i].split("-");
+  tip.innerHTML = "<strong>" + d + "/" + m + "/" + y + "</strong>" +
+    DATA.series.map(s => s.values[i] == null ? "" :
+      '<div class="row"><span class="swatch" style="background:var(--c-' +
+      s.casa + ')"></span>' + s.nombre + ": " + fmtAr(s.values[i]) + "</div>"
+    ).join("");
+  const cardRect = card.getBoundingClientRect();
+  let left = ev.clientX - cardRect.left + 16;
+  if (left + 180 > cardRect.width) left -= 200;
+  tip.style.left = left + "px";
+  tip.style.top = (ev.clientY - cardRect.top + 8) + "px";
+  tip.style.visibility = "visible";
+});
+svg.addEventListener("mouseleave", () => {
+  cross.setAttribute("visibility", "hidden");
+  tip.style.visibility = "hidden";
+});
+</script>
+</body>
+</html>
